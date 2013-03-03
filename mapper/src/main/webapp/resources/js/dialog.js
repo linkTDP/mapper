@@ -1,1 +1,0 @@
-var myLink = new Array();

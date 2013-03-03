@@ -33,6 +33,15 @@ public class Users {
 	public Users() {
 		super();
 	}
+	
+	
+
+	public Users(String username) {
+		super();
+		this.username = username;
+	}
+
+
 
 	public Users(String username, String password, boolean enabled, String email) {
 		super();

@@ -9,6 +9,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
@@ -40,38 +42,51 @@ public class LoginController {
 	private static final Logger logger = LoggerFactory.getLogger(LoginController.class);
 	
 	@RequestMapping(value = "/login", method = RequestMethod.GET)
-	public String login(Locale locale, ModelMap model) {
+	public @ResponseBody ResponseEntity<String> login(Locale locale, ModelMap model) {
 		logger.info("Welcome login! The client locale is {}.", locale);
 		
 		
-		return "login";
+		return createJsonResponse("Authenticated");
 	}
 	
 	@RequestMapping(value="/loginfailed", method = RequestMethod.GET)
-	public String loginerror(ModelMap model) {
+	public @ResponseBody ResponseEntity<String> loginerror(ModelMap model) {
  
-		model.addAttribute("error", "true");
-		return "login";
+		
+		
+		return createJsonResponse("Error Authentication");
  
 	}
 	
-	@RequestMapping(value = "/newUser", method = RequestMethod.POST)
-	public @ResponseBody ResponseEntity<String> newUser(@RequestParam(value="username", required=true) String username,
-														@RequestParam(value="email", required=true) String email,
-														@RequestParam(value="password", required=true) String password,														
+//	@RequestMapping(value = "request/newUser", method = RequestMethod.POST)
+//	public @ResponseBody ResponseEntity<String> newUser(@RequestParam(value="username", required=true) String username,
+//														@RequestParam(value="email", required=true) String email,
+//														@RequestParam(value="password", required=true) String password,														
+//														Model model) {
+//		logger.info("Adding User Request");
+//		
+//		logger.info(username);
+//		
+//		Users u=new Users(username, password , true, email);
+//		Authorities a=new Authorities(u, "ROLE_USER");
+//		
+//		userDao.addUser(u);
+//		
+//		authDao.addAuth(a);
+// 		
+//		return createJsonResponse( true );
+//	}
+	
+	@RequestMapping(value = "/getUser", method = RequestMethod.POST)
+	public @ResponseBody ResponseEntity<String> getUser(														
 														Model model) {
-		logger.info("Adding User Request");
+		logger.info("Test");
 		
-		logger.info(username);
+		User user = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		
-		Users u=new Users(username, password , true, email);
-		Authorities a=new Authorities(u, "ROLE_USER");
-		
-		userDao.addUser(u);
-		
-		authDao.addAuth(a);
+
  		
-		return createJsonResponse( true );
+		return createJsonResponse( user.getUsername() );
 	}
 	
 	
@@ -106,6 +121,11 @@ public class LoginController {
     }
 	
 	
-	
+  private Users getUsers(){
+		User user = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+	    String name = user.getUsername(); //get logged in username
+	    Users u=new Users(user.getUsername(),user.getPassword(),user.isEnabled(),null);
+	    return u;
+  }
 
 }

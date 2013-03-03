@@ -1,5 +1,6 @@
 package foo.nerz.mapper.controller;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -30,7 +31,7 @@ import com.google.gson.Gson;
  * Handles requests for the application home page.
  */
 @Controller
-@RequestMapping("/home")
+@RequestMapping("/")
 public class HomeController {
 	
 	private static final Logger logger = LoggerFactory.getLogger(HomeController.class);
@@ -54,6 +55,17 @@ public class HomeController {
 		
 		return "index";
 	}
+	
+	
+	
+	@RequestMapping(value="page", method = RequestMethod.GET, params= "page")
+	public String getPage(@RequestParam(value = "page") String page){
+		logger.info("request for the page "+page);
+		
+		return "generated"+File.separator+page;
+	}
+	
+	
 	
 	
 	
