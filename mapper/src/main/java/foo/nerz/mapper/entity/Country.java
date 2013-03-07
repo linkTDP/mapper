@@ -123,6 +123,18 @@ public class Country {
 	public void setPopulation(Integer population) {
 		this.population = population;
 	}
+	@Override
+	public String toString() {
+		return "Country [countryName=" + countryName + ", currencyCode="
+				+ currencyCode + ", fipsCode=" + fipsCode + ", countryCode="
+				+ countryCode + ", isoNumeric=" + isoNumeric + ", north="
+				+ north + ", capital=" + capital + ", continentName="
+				+ continentName + ", areaInSqKm=" + areaInSqKm + ", languages="
+				+ languages + ", isoAlpha3=" + isoAlpha3 + ", continent="
+				+ continent + ", south=" + south + ", east=" + east
+				+ ", geonameId=" + geonameId + ", west=" + west
+				+ ", population=" + population + "]";
+	}
 	
 	
 	

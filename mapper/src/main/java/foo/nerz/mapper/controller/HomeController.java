@@ -1,35 +1,35 @@
 package foo.nerz.mapper.controller;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+
 import java.util.Locale;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.data.mongodb.core.MongoOperations;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.domain.Sort.Order;
+
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+
 
 import com.google.gson.Gson;
 
-import foo.nerz.mapper.configuration.AppConfig;
-import foo.nerz.mapper.entity.Country;
+
+
+import foo.nerz.mapper.repository.CityRepo;
+import foo.nerz.mapper.repository.CountryRepo;
 
 
 
@@ -44,11 +44,14 @@ public class HomeController {
 	
 	Gson gson = new Gson();
 	
+	@Autowired CityRepo repository;
+	
+	@Autowired CountryRepo repoCountry;
 
 	/**
 	 * Simply selects the home view to render by returning its name.
 	 */
-	@RequestMapping(value = "/", method = RequestMethod.GET)
+	@RequestMapping(value = "", method = RequestMethod.GET)
 	public String home(Locale locale, Model model) {
 		logger.info("Welcome home! The client locale is {}.", locale);
 		
@@ -62,21 +65,25 @@ public class HomeController {
 		return "index";
 	}
 	
-	@RequestMapping(value = "/country", method = RequestMethod.GET)
+	@RequestMapping(value = "country", method = RequestMethod.GET)
 	public ResponseEntity<String> country(Locale locale, Model model) {
 		logger.info("Welcome home! the clientry request country");
 
-		ApplicationContext ctx = 
-	               new AnnotationConfigApplicationContext(AppConfig.class);
-		 MongoOperations mongoOperation = 
-	               (MongoOperations) ctx.getBean("mongoTemplate");
-		 List<Country> country=mongoOperation.findAll(Country.class,"country");
-		 
+		
 		 
 		
-		return createJsonResponse(country);
+		return createJsonResponse(repoCountry.findAll());
 	}
 	
+	@RequestMapping(value = "city", method = RequestMethod.GET,params="s")
+	public ResponseEntity<String> city(@RequestParam(value = "s") String s) {
+		logger.info("Welcome home! the clientry request city");
+
+		
+		 
+		
+		return createJsonResponse(repository.findByNameRegex("^"+s, new PageRequest(0, 20,new Sort(new Order(Direction.DESC, "population")))));
+	}
 	
 	@RequestMapping(value="page", method = RequestMethod.GET, params= "page")
 	public String getPage(@RequestParam(value = "page") String page){
